@@ -5,6 +5,11 @@
     <title>JSP - Hello World</title>
 </head>
 <body>
-<a href="<%=request.getContextPath()%>/auth/login">Login</a>
+<h3>Chao mung ban den voi chung toi</h3>
+<h4>Vui long an linh duoi day de chuyen sang trang dang ki!</h4>
+<a href="<%=request.getContextPath()%>/user/register">REGISTER</a>
+<hr>
+<h4>Ban da co tai khoan? Vui long an dang nhap!</h4>
+<a href="<%=request.getContextPath()%>/user/login">Login</a>
 </body>
 </html>

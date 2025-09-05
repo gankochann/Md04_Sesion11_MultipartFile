@@ -1,43 +1,51 @@
 package ra.com.service;
 
-import com.cloudinary.Cloudinary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+import ra.com.dto.UserRegisterDto;
+import ra.com.dto.UserloginDto;
 import ra.com.model.User;
-import ra.com.model.UserDto;
-import ra.com.model.UserLogin;
-import ra.com.repository.UserRepo;
+import ra.com.repository.ipm.UserRepoIpm;
 
 import javax.transaction.Transactional;
 
 @Service
 public class UserService {
-    @Autowired
-    UserRepo userRepo;
 
     @Autowired
-    CloudinaryService cloudinaryService;
-
-    public boolean checkUserName(String username) {
-        return !userRepo.fullNameIsExist(username);
-    }
-
+    private UserRepoIpm userRepoIpm;
+    @Autowired
+    private CloudanaryService cloudanaryService;
     @Transactional
-    public User login(UserLogin userLogin){
-        return userRepo.login(userLogin.getUsername(),userLogin.getPassword());
-    }
-
-    public User register(UserDto userDto){
-        User user = new User();
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setEmail(userDto.getEmail());
-
-        if(userDto.getImage() != null && !userDto.getImage().isEmpty()){
-             String url = cloudinaryService.upload(userDto.getImage());
-            user.setAvatar(url);
+    public boolean createUser(UserRegisterDto userRegisterDto, Errors errors){
+        boolean emailExist = userRepoIpm.isExistEmail(userRegisterDto.getEmail());
+        boolean isExisted = false;
+        boolean usernameExist = userRepoIpm.isExitsUserName(userRegisterDto.getUsername());
+        if(emailExist){
+            errors.rejectValue("email", "email.isExist" , "vui long nhap lai email");
+            isExisted = true;
         }
-        return userRepo.register(user);
+        if(usernameExist){
+            errors.rejectValue("username", "username.isExist" , "vui long nhap lai username");
+            isExisted = true;
+        }
+        if(!isExisted){
+            String avataUrl = cloudanaryService.upload(userRegisterDto.getAvata());
+            User user = new User(
+                    userRegisterDto.getId(),
+                    userRegisterDto.getUsername(),
+                    userRegisterDto.getPassword(),
+                    userRegisterDto.getEmail(),
+                    avataUrl
+            );
+            return userRepoIpm.addUser(user);
+        }else {
+            return false;
+        }
     }
 
+    public User login(UserloginDto userloginDto) {
+        return userRepoIpm.login(userloginDto.getUsername(), userloginDto.getPassword());
+    }
 }

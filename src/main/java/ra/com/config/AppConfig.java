@@ -10,7 +10,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -24,9 +24,11 @@ import java.util.Properties;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = {"ra.com"})
+@EnableTransactionManagement
 public class AppConfig {
+    //1. Cấu hình Spring - ViewResolver
     @Bean
-    public ViewResolver viewResolver(){
+    public ViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setPrefix("/views/");
         viewResolver.setSuffix(".jsp");
@@ -45,7 +47,6 @@ public class AppConfig {
     }
 
     //3. Cấu hình hibernate properties
-    @Bean
     public Properties addionalProperties() {
         Properties properties = new Properties();
         /*
@@ -66,10 +67,10 @@ public class AppConfig {
          * - Tạo rằng buộc của Category (alter)
          * - Tạo rằng buộc của Project (alter)
          * */
-        // properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
+        //properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8InnoDBDialect");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
         properties.setProperty("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
+        properties.setProperty("hibernate.format_sql" , "true");
         return properties;
     }
 
@@ -107,10 +108,12 @@ public class AppConfig {
         return transactionManager;
     }
 
+    //7. Cấu hình cho Multipart Resolver
     @Bean
-    public MultipartResolver multipartResolver() {
+    public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(5*1024*1024);
+        //Cấu hình dung lượng tối đa cho mỗi request upload là 5MB
+        multipartResolver.setMaxUploadSize(5 * 1024 * 1024);
         return multipartResolver;
     }
 }

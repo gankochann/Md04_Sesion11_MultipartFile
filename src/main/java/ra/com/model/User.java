@@ -1,31 +1,32 @@
 package ra.com.model;
 
-import lombok.*;
-import ra.com.validator.usernameIsExist.UserNameIsExist;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "users")
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
+@AllArgsConstructor
 @Setter
-@Builder
+@Getter
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private  long id;
 
-    @Column(unique = true , nullable = false)
-    @UserNameIsExist
+    @NotBlank(message = "vui long khong de trong!")
     private String username;
 
-    @Column( nullable = false)
+    @NotBlank(message = "vui long khong de trong!")
     private String password;
 
-    @Column(nullable = false)
+    @NotBlank(message = "vui long khong de trong!")
     private String email;
 
-    private String avatar;
+    private String avata;
 }
